@@ -18,14 +18,6 @@ pub struct LookupCrateParams {
     /// Target platform (e.g., "i686-pc-windows-msvc")
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub target: Option<String>,
-
-    /// Rustdoc JSON format version
-    #[serde(
-        default,
-        skip_serializing_if = "Option::is_none",
-        rename = "formatVersion"
-    )]
-    pub format_version: Option<u32>,
 }
 
 pub async fn handle(fetcher: &DocsFetcher, params: LookupCrateParams) -> Result<String> {
@@ -41,7 +33,7 @@ pub async fn handle(fetcher: &DocsFetcher, params: LookupCrateParams) -> Result<
             &params.crate_name,
             params.version.as_deref(),
             params.target.as_deref(),
-            params.format_version,
+            None,
         )
         .await?;
 

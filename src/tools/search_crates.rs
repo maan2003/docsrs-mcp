@@ -9,7 +9,7 @@ pub struct SearchCratesParams {
     /// Search query for crate names (supports partial matches)
     pub query: String,
 
-    /// Maximum number of results to return
+    /// Maximum number of results to return (default: 10)
     #[serde(default = "default_limit")]
     pub limit: usize,
 }
