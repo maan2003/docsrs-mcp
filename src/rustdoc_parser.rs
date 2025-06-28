@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use rustdoc_types::{Crate as RustdocCrate, Id, Item, ItemEnum, Visibility};
 
 /// Get the first line of documentation, truncated if too long
@@ -319,8 +319,7 @@ pub fn find_item(rustdoc: &RustdocCrate, item_path: &str) -> Result<String> {
     // First try to find by path in the paths index
     for (id, path_info) in &rustdoc.paths {
         let full_path = path_info.path.join("::");
-        if full_path.ends_with(item_path) || path_info.path.last().map_or(false, |p| p == item_path)
-        {
+        if full_path.ends_with(item_path) || path_info.path.last().is_some_and(|p| p == item_path) {
             if let Some(item) = rustdoc.index.get(id) {
                 return Ok(format_item(item, Some(&format!("{:?}", path_info.kind))));
             }
@@ -328,7 +327,7 @@ pub fn find_item(rustdoc: &RustdocCrate, item_path: &str) -> Result<String> {
     }
 
     // Fallback: search through all items by name
-    let search_name = item_path.split('.').last().unwrap_or(item_path);
+    let search_name = item_path.split('.').next_back().unwrap_or(item_path);
     for item in rustdoc.index.values() {
         if item.name.as_deref() == Some(search_name) {
             return Ok(format_item(item, None));
