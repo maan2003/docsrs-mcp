@@ -2,7 +2,6 @@ use anyhow::{Context, Result};
 use reqwest::Client;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use std::time::Duration;
 
 #[derive(Debug, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct SearchCratesParams {
@@ -43,19 +42,12 @@ struct Meta {
     total: usize,
 }
 
-pub async fn handle(params: SearchCratesParams) -> Result<String> {
+pub async fn handle(client: &Client, params: SearchCratesParams) -> Result<String> {
     tracing::info!(
         "Searching crates.io for: '{}' (limit: {})",
         params.query,
         params.limit
     );
-
-    // Create HTTP client with timeout
-    let client = Client::builder()
-        .user_agent("docsrs-mcp/0.1.0")
-        .timeout(Duration::from_secs(5))
-        .build()
-        .context("Failed to create HTTP client")?;
 
     // Build the search URL
     let search_url = format!(
@@ -126,20 +118,17 @@ pub async fn handle(params: SearchCratesParams) -> Result<String> {
 }
 
 /// Helper function to suggest similar crate names
-pub async fn suggest_similar_crates(crate_name: &str, limit: usize) -> Result<Vec<String>> {
+pub async fn suggest_similar_crates(
+    client: &Client,
+    crate_name: &str,
+    limit: usize,
+) -> Result<Vec<String>> {
     tracing::info!("Finding similar crates to: {}", crate_name);
 
     let params = SearchCratesParams {
         query: crate_name.to_string(),
         limit,
     };
-
-    // Create HTTP client with timeout
-    let client = Client::builder()
-        .user_agent("docsrs-mcp/0.1.0")
-        .timeout(Duration::from_secs(5))
-        .build()
-        .context("Failed to create HTTP client")?;
 
     // Build the search URL
     let search_url = format!(

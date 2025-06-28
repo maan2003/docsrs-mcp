@@ -17,7 +17,7 @@ rmcp = { git = "https://github.com/modelcontextprotocol/rust-sdk", features = ["
 tokio = { version = "1", features = ["full"] }
 
 # HTTP client for docs.rs API with automatic decompression
-reqwest = { version = "0.12", default-features = false, features = ["json", "gzip", "deflate", "brotli", "stream", "rustls-tls", "http2"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "zstd", "rustls-tls", "http2"] }
 
 # Serialization
 serde = { version = "1", features = ["derive"] }

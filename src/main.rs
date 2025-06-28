@@ -1,5 +1,5 @@
 use anyhow::Result;
-use rmcp::{transport::stdio, ServiceExt};
+use rmcp::{ServiceExt, transport::stdio};
 use tracing_subscriber::{self, EnvFilter};
 
 mod docs_fetcher;

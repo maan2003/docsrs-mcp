@@ -6,13 +6,16 @@ use crate::tools::{
     lookup_crate, lookup_item, search_crates, search_crates::suggest_similar_crates,
 };
 use anyhow::Result;
+use reqwest::Client;
 use rmcp::{
-    handler::server::router::tool::ToolRouter, handler::server::tool::Parameters, model::*, tool,
-    tool_handler, tool_router, Error as McpError, ServerHandler,
+    Error as McpError, ServerHandler, handler::server::router::tool::ToolRouter,
+    handler::server::tool::Parameters, model::*, tool, tool_handler, tool_router,
 };
+use std::time::Duration;
 
 #[derive(Clone)]
 pub struct DocsRsServer {
+    client: Client,
     fetcher: Arc<DocsFetcher>,
     tool_router: ToolRouter<Self>,
 }
@@ -20,8 +23,16 @@ pub struct DocsRsServer {
 #[tool_router]
 impl DocsRsServer {
     pub fn new() -> Self {
-        let fetcher = Arc::new(DocsFetcher::new());
+        // Create shared HTTP client with optimal settings for docs.rs
+        let client = Client::builder()
+            .user_agent("docsrs-mcp/0.1.0")
+            .timeout(Duration::from_secs(120))
+            .build()
+            .expect("Failed to create HTTP client");
+
+        let fetcher = Arc::new(DocsFetcher::new(client.clone()));
         Self {
+            client,
             fetcher,
             tool_router: Self::tool_router(),
         }
@@ -48,7 +59,9 @@ impl DocsRsServer {
 
                 // If crate not found, suggest similar crates
                 if e.to_string().contains("not found") {
-                    if let Ok(suggestions) = suggest_similar_crates(&params.crate_name, 5).await {
+                    if let Ok(suggestions) =
+                        suggest_similar_crates(&self.client, &params.crate_name, 5).await
+                    {
                         // Only show suggestions if we found actual alternatives
                         if !suggestions.is_empty() && !suggestions.contains(&params.crate_name) {
                             error_message.push_str("\n\nDid you mean one of these crates?\n");
@@ -101,7 +114,7 @@ impl DocsRsServer {
         &self,
         Parameters(params): Parameters<search_crates::SearchCratesParams>,
     ) -> Result<CallToolResult, McpError> {
-        match search_crates::handle(params).await {
+        match search_crates::handle(&self.client, params).await {
             Ok(content) => Ok(CallToolResult::success(vec![Content::text(content)])),
             Err(e) => Ok(CallToolResult::success(vec![Content::text(format!(
                 "Error: {}",

@@ -1,23 +1,13 @@
-use anyhow::{anyhow, Context, Result};
+use anyhow::{Context, Result, anyhow};
 use reqwest::Client;
 use rustdoc_types::Crate as RustdocCrate;
-use std::time::Duration;
 
 pub struct DocsFetcher {
     client: Client,
 }
 
 impl DocsFetcher {
-    pub fn new() -> Self {
-        let client = Client::builder()
-            .user_agent("docsrs-mcp/0.1.0")
-            .timeout(Duration::from_secs(30))
-            .gzip(true)
-            .brotli(true)
-            .deflate(true)
-            .build()
-            .expect("Failed to create HTTP client");
-
+    pub fn new(client: Client) -> Self {
         Self { client }
     }
 
