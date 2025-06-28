@@ -27,7 +27,16 @@ impl DocsRsServer {
         }
     }
 
-    #[tool(description = "Lookup documentation for a Rust crate from docs.rs")]
+    #[tool(
+        description = "Lookup documentation for a Rust crate from docs.rs",
+        annotations(
+            title = "Lookup Rust Crate Documentation",
+            read_only_hint = true,
+            destructive_hint = false,
+            idempotent_hint = true,
+            open_world_hint = true
+        )
+    )]
     async fn lookup_crate_docs(
         &self,
         Parameters(params): Parameters<lookup_crate::LookupCrateParams>,
@@ -56,7 +65,14 @@ impl DocsRsServer {
     }
 
     #[tool(
-        description = "Lookup documentation for a specific item (struct, function, etc.) in a Rust crate"
+        description = "Lookup documentation for a specific item (struct, function, etc.) in a Rust crate",
+        annotations(
+            title = "Lookup Rust Item Documentation",
+            read_only_hint = true,
+            destructive_hint = false,
+            idempotent_hint = true,
+            open_world_hint = true
+        )
     )]
     async fn lookup_item_docs(
         &self,
@@ -71,7 +87,16 @@ impl DocsRsServer {
         }
     }
 
-    #[tool(description = "Search for Rust crates on crates.io with fuzzy/partial name matching")]
+    #[tool(
+        description = "Search for Rust crates on crates.io with fuzzy/partial name matching",
+        annotations(
+            title = "Search Rust Crates",
+            read_only_hint = true,
+            destructive_hint = false,
+            idempotent_hint = true,
+            open_world_hint = true
+        )
+    )]
     async fn search_crates(
         &self,
         Parameters(params): Parameters<search_crates::SearchCratesParams>,
