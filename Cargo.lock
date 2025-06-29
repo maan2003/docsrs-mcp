@@ -303,7 +303,9 @@ name = "docsrs-mcp"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "async-compression",
  "clap",
+ "futures",
  "reqwest",
  "rmcp",
  "rustdoc-types 0.46.1",
@@ -317,6 +319,7 @@ dependencies = [
  "serde",
  "serde_json",
  "tokio",
+ "tokio-util",
  "tracing",
  "tracing-subscriber",
  "urlencoding",

@@ -1,5 +1,7 @@
-use anyhow::{Context, Result, anyhow};
+use anyhow::{anyhow, Context, Result};
+use async_compression::tokio::bufread::ZstdDecoder;
 use reqwest::Client;
+use tokio::io::AsyncReadExt;
 
 pub struct DocsFetcher {
     client: Client,
@@ -61,6 +63,9 @@ impl DocsFetcher {
             .await
             .context("Failed to send request to docs.rs")?;
 
+        // Log response headers for debugging
+        tracing::debug!("Response headers for {}: {:?}", url, response.headers());
+
         if response.status() == 404 {
             let version_str = version
                 .map(|v| format!(" version {}", v))
@@ -79,20 +84,74 @@ impl DocsFetcher {
                 response.status().canonical_reason().unwrap_or("Unknown")
             ));
         }
+        tracing::debug!("Response is successful, attempting to read body");
 
-        // Get the response body as text first for better error messages
-        let body = response
-            .text()
+        // Check if response is zstd compressed
+        let is_zstd = response
+            .headers()
+            .get("content-encoding")
+            .and_then(|v| v.to_str().ok())
+            .map(|s| s.eq_ignore_ascii_case("zstd"))
+            .unwrap_or(false);
+
+        // Get the response body as bytes
+        let bytes = response
+            .bytes()
             .await
             .context("Failed to read response body")?;
+
+        tracing::debug!("Body length: {} bytes", bytes.len());
+
+        if bytes.is_empty() {
+            return Err(anyhow!("Empty response body from docs.rs"));
+        }
+
+        // Decompress if needed
+        let body = if is_zstd {
+            tracing::debug!("Decompressing zstd content");
+            let mut decoder = ZstdDecoder::new(tokio::io::BufReader::new(&bytes[..]));
+            let mut decompressed = String::new();
+            decoder
+                .read_to_string(&mut decompressed)
+                .await
+                .context("Failed to decompress zstd content")?;
+            decompressed
+        } else {
+            String::from_utf8(bytes.to_vec()).context("Response body is not valid UTF-8")?
+        };
+
+        tracing::debug!("Decoded body length: {} chars", body.len());
 
         if body.trim().is_empty() {
             return Err(anyhow!("Empty response body from docs.rs"));
         }
 
+        // Check if we got HTML instead of JSON (docs.rs returns HTML when JSON is not available)
+        if body.trim().starts_with("<!DOCTYPE") || body.trim().starts_with("<html") {
+            return Err(anyhow!(
+                "Crate '{}' does not have rustdoc JSON available. Docs.rs returned HTML instead. \
+         Note: docs.rs only builds rustdoc JSON for crates published after 2023-05-23.",
+                crate_name
+            ));
+        }
+
+        // Log the first part of the response for debugging
+        if tracing::enabled!(tracing::Level::DEBUG) {
+            let preview = if body.len() > 500 {
+                &body[..500]
+            } else {
+                &body
+            };
+            tracing::debug!("Response body preview: {}", preview);
+        }
+
         // Just do basic validation that it's valid JSON
-        let _: serde_json::Value = serde_json::from_str(&body)
-            .context("Failed to parse rustdoc JSON. The response may not be valid rustdoc JSON.")?;
+        let _: serde_json::Value = serde_json::from_str(&body).with_context(|| {
+            format!(
+                "Failed to parse response as JSON. Response starts with: {}",
+                &body.chars().take(100).collect::<String>()
+            )
+        })?;
 
         tracing::info!("Successfully fetched rustdoc JSON for {}", crate_name);
 

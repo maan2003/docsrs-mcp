@@ -47,3 +47,10 @@ schemars = "0.8"
 
 # CLI argument parsing
 clap = { version = "4", features = ["derive"] }
+
+# Async decompression
+async-compression = { version = "0.4", features = ["tokio", "zstd"] }
+
+# Additional async utilities
+tokio-util = { version = "0.7", features = ["io"] }
+futures = "0.3"
