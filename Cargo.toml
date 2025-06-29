@@ -44,3 +44,6 @@ urlencoding = "2"
 
 # JSON Schema generation
 schemars = "0.8"
+
+# CLI argument parsing
+clap = { version = "4", features = ["derive"] }

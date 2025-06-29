@@ -8,15 +8,15 @@ use crate::tools::{
 use anyhow::Result;
 use reqwest::Client;
 use rmcp::{
-    Error as McpError, ServerHandler, handler::server::router::tool::ToolRouter,
-    handler::server::tool::Parameters, model::*, tool, tool_handler, tool_router,
+    handler::server::router::tool::ToolRouter, handler::server::tool::Parameters, model::*, tool,
+    tool_handler, tool_router, Error as McpError, ServerHandler,
 };
 use std::time::Duration;
 
 #[derive(Clone)]
 pub struct DocsRsServer {
-    client: Client,
-    fetcher: Arc<DocsFetcher>,
+    pub client: Client,
+    pub fetcher: Arc<DocsFetcher>,
     tool_router: ToolRouter<Self>,
 }
 
