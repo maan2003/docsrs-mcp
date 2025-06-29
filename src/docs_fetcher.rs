@@ -1,6 +1,5 @@
 use anyhow::{Context, Result, anyhow};
 use reqwest::Client;
-use rustdoc_types::Crate as RustdocCrate;
 
 pub struct DocsFetcher {
     client: Client,
@@ -50,7 +49,7 @@ impl DocsFetcher {
         version: Option<&str>,
         target: Option<&str>,
         format_version: Option<u32>,
-    ) -> Result<RustdocCrate> {
+    ) -> Result<String> {
         let url = self.build_json_url(crate_name, version, target, format_version);
 
         tracing::info!("Fetching rustdoc JSON from: {}", url);
@@ -91,21 +90,12 @@ impl DocsFetcher {
             return Err(anyhow!("Empty response body from docs.rs"));
         }
 
-        // Parse the JSON
-        let rustdoc: RustdocCrate = serde_json::from_str(&body)
+        // Just do basic validation that it's valid JSON
+        let _: serde_json::Value = serde_json::from_str(&body)
             .context("Failed to parse rustdoc JSON. The response may not be valid rustdoc JSON.")?;
 
-        // Validate that we have the expected rustdoc structure
-        if rustdoc.index.is_empty() {
-            return Err(anyhow!("Invalid rustdoc JSON structure: index is empty"));
-        }
+        tracing::info!("Successfully fetched rustdoc JSON for {}", crate_name);
 
-        tracing::info!(
-            "Successfully fetched rustdoc JSON for {} (format version: {})",
-            crate_name,
-            rustdoc.format_version
-        );
-
-        Ok(rustdoc)
+        Ok(body)
     }
 }

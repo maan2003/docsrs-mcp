@@ -1,5 +1,5 @@
 use anyhow::{Result, anyhow};
-use rustdoc_types::{Crate as RustdocCrate, Id, Item, ItemEnum, Visibility};
+use rustdoc_types_v53::{Crate as RustdocCrate, Id, Item, ItemEnum, Visibility};
 
 /// Get the first line of documentation, truncated if too long
 fn get_first_line(docs: &str) -> String {
@@ -133,15 +133,15 @@ fn extract_functions(rustdoc: &RustdocCrate, parent_id: &Id) -> Vec<String> {
 }
 
 /// Format struct details
-fn format_struct(struct_data: &rustdoc_types::Struct) -> Vec<String> {
+fn format_struct(struct_data: &rustdoc_types_v53::Struct) -> Vec<String> {
     let mut sections = Vec::new();
 
     sections.push(format!(
         "\n**Struct Type:** {}",
         match struct_data.kind {
-            rustdoc_types::StructKind::Plain { .. } => "plain",
-            rustdoc_types::StructKind::Tuple(_) => "tuple",
-            rustdoc_types::StructKind::Unit => "unit",
+            rustdoc_types_v53::StructKind::Plain { .. } => "plain",
+            rustdoc_types_v53::StructKind::Tuple(_) => "tuple",
+            rustdoc_types_v53::StructKind::Unit => "unit",
         }
     ));
 
@@ -156,7 +156,7 @@ fn format_struct(struct_data: &rustdoc_types::Struct) -> Vec<String> {
 }
 
 /// Format enum details
-fn format_enum(enum_data: &rustdoc_types::Enum) -> Vec<String> {
+fn format_enum(enum_data: &rustdoc_types_v53::Enum) -> Vec<String> {
     let mut sections = Vec::new();
 
     if !enum_data.variants.is_empty() {
@@ -177,7 +177,7 @@ fn format_enum(enum_data: &rustdoc_types::Enum) -> Vec<String> {
 }
 
 /// Format function details
-fn format_function(func: &rustdoc_types::Function) -> Vec<String> {
+fn format_function(func: &rustdoc_types_v53::Function) -> Vec<String> {
     let mut sections = Vec::new();
 
     let mut attrs = Vec::new();
@@ -199,7 +199,7 @@ fn format_function(func: &rustdoc_types::Function) -> Vec<String> {
 }
 
 /// Format trait details
-fn format_trait(trait_data: &rustdoc_types::Trait) -> Vec<String> {
+fn format_trait(trait_data: &rustdoc_types_v53::Trait) -> Vec<String> {
     let mut sections = Vec::new();
 
     let mut attrs = Vec::new();

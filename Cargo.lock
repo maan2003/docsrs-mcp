@@ -209,7 +209,13 @@ dependencies = [
  "anyhow",
  "reqwest",
  "rmcp",
- "rustdoc-types",
+ "rustdoc-types 0.46.1",
+ "rustdoc-types 0.48.0",
+ "rustdoc-types 0.49.0",
+ "rustdoc-types 0.50.0",
+ "rustdoc-types 0.51.0",
+ "rustdoc-types 0.52.0",
+ "rustdoc-types 0.53.0",
  "schemars",
  "serde",
  "serde_json",
@@ -1132,7 +1138,69 @@ checksum = "357703d41365b4b27c590e3ed91eabb1b663f07c4c084095e60cbed4362dff0d"
 
 [[package]]
 name = "rustdoc-types"
+version = "0.46.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "203deadf94c78c2fbf43e3b35a687b6247f65757aa78452e232a35e935016af7"
+dependencies = [
+ "serde",
+ "serde_derive",
+]
+
+[[package]]
+name = "rustdoc-types"
+version = "0.48.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "50fc89b069580755b97b9b75e8fb80d7f44be4da1d259840938818dd10109df6"
+dependencies = [
+ "serde",
+ "serde_derive",
+]
+
+[[package]]
+name = "rustdoc-types"
+version = "0.49.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f7acedf7ade997cc7bcccc53b31075f2b96d649f9dd56cf56d8ecab5ae8b340a"
+dependencies = [
+ "serde",
+ "serde_derive",
+]
+
+[[package]]
+name = "rustdoc-types"
+version = "0.50.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "13340c6ba2f648d235c47a5f8a73ff0c45ce003e17b63d92d7e536a8494199d6"
+dependencies = [
+ "serde",
+ "serde_derive",
+]
+
+[[package]]
+name = "rustdoc-types"
+version = "0.51.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b47b2236725d3359ecffac81d68fa1cf48cc5bced314cd5141523648f848a39c"
+dependencies = [
+ "serde",
+ "serde_derive",
+]
+
+[[package]]
+name = "rustdoc-types"
+version = "0.52.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c1a10859a2d4db98f2bf48452d01d0a59eb0442f6d1c12afc569c8d09feb6ec6"
+dependencies = [
+ "serde",
+ "serde_derive",
+]
+
+[[package]]
+name = "rustdoc-types"
 version = "0.53.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "53175c56be456e96171b9c3efcd8e5216fbb7b40cc6355a1953090556621205b"
 dependencies = [
  "serde",
  "serde_derive",

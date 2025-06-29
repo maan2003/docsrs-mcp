@@ -28,7 +28,7 @@ pub async fn handle(fetcher: &DocsFetcher, params: LookupCrateParams) -> Result<
     );
 
     // Fetch the rustdoc JSON from docs.rs
-    let rustdoc = fetcher
+    let json_str = fetcher
         .fetch_crate_json(
             &params.crate_name,
             params.version.as_deref(),
@@ -38,7 +38,7 @@ pub async fn handle(fetcher: &DocsFetcher, params: LookupCrateParams) -> Result<
         .await?;
 
     // Parse and format the crate information
-    let content = rustdoc_parser::parse_crate_info(&rustdoc)?;
+    let content = rustdoc_parser::parse_crate_info(&json_str)?;
 
     Ok(content)
 }
