@@ -128,7 +128,7 @@ impl DocsRsServer {
 impl ServerHandler for DocsRsServer {
     fn get_info(&self) -> ServerInfo {
         ServerInfo {
-            protocol_version: ProtocolVersion::V_2024_11_05,
+            protocol_version: ProtocolVersion::LATEST,
             capabilities: ServerCapabilities::builder().enable_tools().build(),
             server_info: Implementation {
                 name: "docsrs-mcp".to_string(),
